@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Pet Store
-  version: 1.0.0
+  version: 2.0.0
   description: |
     A demo API for trying SpecPage, the OpenAPI docs macro for Confluence.
     Pets and orders for an imaginary pet store; the server is not real.
@@ -9,7 +9,7 @@ info:
     name: API team
     email: api@example.com
 servers:
-  - url: https://petstore.example.com/v1
+  - url: https://petstore.example.com/v2
     description: Example server (not a real API)
 security:
   - bearerAuth: []
@@ -26,6 +26,12 @@ paths:
       description: Returns pets, newest first. Use the status filter to show only available pets.
       operationId: listPets
       parameters:
+        - name: storeId
+          in: query
+          required: true
+          description: The store to list pets from
+          schema: { type: integer, format: int64 }
+          example: 3
         - name: status
           in: query
           description: Only return pets with this status
@@ -89,21 +95,12 @@ paths:
               example: { id: 42, name: Rex, species: dog, status: available }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
-    delete:
-      tags: [pets]
-      summary: Remove a pet
-      description: Removes a pet from the store. This can't be undone.
-      operationId: deletePet
-      responses:
-        '204':
-          description: The pet was removed
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
   /orders:
     post:
       tags: [orders]
       summary: Place an order
-      description: Orders a pet. The pet's status changes to pending until the order is delivered.
+      description: Orders a pet. Deprecated; use the checkout API instead. The pet's status changes to pending until the order is delivered.
+      deprecated: true
       operationId: placeOrder
       requestBody:
         required: true
@@ -121,6 +118,33 @@ paths:
               example: { id: 7, petId: 42, quantity: 1, status: placed, placedAt: '2026-01-15T10:30:00Z' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /orders/{orderId}:
+    get:
+      tags: [orders]
+      summary: Get an order
+      description: Returns one order by its ID, including whether it has been delivered.
+      operationId: getOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: The order's ID
+          schema: { type: integer, format: int64 }
+          example: 7
+      responses:
+        '200':
+          description: The order
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+              example: { id: 7, petId: 42, quantity: 1, status: delivered, placedAt: '2026-01-15T10:30:00Z' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: There's no order with that ID
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { code: not_found, message: No order with ID 7 }
 components:
   securitySchemes:
     bearerAuth:
@@ -150,7 +174,7 @@ components:
     PetStatus:
       type: string
       description: Where the pet is in the sales process
-      enum: [available, pending, sold]
+      enum: [available, pending, sold, adopted]
     NewPet:
       type: object
       description: The details needed to add a pet
