@@ -53,6 +53,7 @@ post:
             - sku: FOOD-DOG-2KG
               quantity: 2
           shippingAddressId: addr_81f2
+          currency: CAD
   responses:
     '201':
       description: The order was placed

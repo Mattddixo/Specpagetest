@@ -1,0 +1,12 @@
+type: object
+description: What the order costs, broken down. Replaces the single total from version 1.
+required: [subtotal, shipping, tax, total]
+properties:
+  subtotal:
+    $ref: ../../../shared/schemas/Money.yaml
+  shipping:
+    $ref: ../../../shared/schemas/Money.yaml
+  tax:
+    $ref: ../../../shared/schemas/Money.yaml
+  total:
+    $ref: ../../../shared/schemas/Money.yaml

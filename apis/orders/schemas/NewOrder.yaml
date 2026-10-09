@@ -1,6 +1,6 @@
 type: object
 description: What to order and where to send it
-required: [items, shippingAddressId]
+required: [items, shippingAddressId, currency]
 properties:
   items:
     type: array
@@ -23,6 +23,11 @@ properties:
     type: string
     description: One of the customer's saved addresses
     example: addr_81f2
+  currency:
+    type: string
+    pattern: '^[A-Z]{3}$'
+    description: The currency to charge in. Orders used to always be in USD.
+    example: CAD
   notes:
     type: string
     maxLength: 500

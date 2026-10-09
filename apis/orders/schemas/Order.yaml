@@ -1,6 +1,6 @@
 type: object
 description: An order placed by a customer
-required: [id, status, items, total, createdAt]
+required: [id, status, items, totals, createdAt]
 properties:
   id:
     type: string
@@ -13,8 +13,8 @@ properties:
     description: What was ordered
     items:
       $ref: OrderItem.yaml
-  total:
-    $ref: ../../../shared/schemas/Money.yaml
+  totals:
+    $ref: OrderTotals.yaml
   notes:
     type: string
     description: Delivery instructions given with the order

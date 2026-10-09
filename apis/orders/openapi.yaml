@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Orders API
-  version: 1.1.0
+  version: 2.0.0-draft
   description: |
     Place and track orders in the Acme Pets store.
 
@@ -14,9 +14,9 @@ info:
     name: Commerce team
     email: commerce@acme-pets.example
 servers:
-  - url: https://api.acme-pets.example/orders/v1
+  - url: https://api.acme-pets.example/orders/v2
     description: Production
-  - url: https://sandbox.acme-pets.example/orders/v1
+  - url: https://sandbox.acme-pets.example/orders/v2
     description: Sandbox (test data, reset nightly)
 security:
   - bearerAuth: []
