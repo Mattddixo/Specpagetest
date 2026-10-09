@@ -46,8 +46,8 @@ at a part such as `paths/orders.yaml`, which isn't a complete spec on its own.
 - `main` is what's live.
 - Branch `v1` is the Pet Store's first version (1.0.0). `main` is 2.0.0,
   which removed an endpoint and added a required parameter.
-- Tag `orders-v1.0.0` is the first Orders release. `main` has 1.1.0, which
-  only adds things.
+- Branch `release-orders-1.0` is the first Orders release (1.0.0). `main`
+  has 1.1.0, which only adds things.
 - Branch `orders-v2` is work in progress on Orders 2.0, which changes how
   totals are sent: a breaking change for anyone using the API.
 
@@ -62,7 +62,7 @@ at a part such as `paths/orders.yaml`, which isn't a complete spec on its own.
 3. Things to try:
    - The Orders macro shows it merged 15 files into one document.
    - Click Changes on the Pet Store and enter `v1`, or on Orders and enter
-     `orders-v1.0.0` (additions only) or `orders-v2` (breaking changes).
+     `release-orders-1.0` (additions only) or `orders-v2` (breaking changes).
    - Put several macros on one page, one per API, or open the space's API
      list to see them all.
 
