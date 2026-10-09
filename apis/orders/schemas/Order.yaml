@@ -15,6 +15,10 @@ properties:
       $ref: OrderItem.yaml
   total:
     $ref: ../../../shared/schemas/Money.yaml
+  notes:
+    type: string
+    description: Delivery instructions given with the order
+    example: Leave with the neighbour at number 12
   createdAt:
     type: string
     format: date-time

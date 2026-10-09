@@ -1,0 +1,30 @@
+parameters:
+  - name: orderId
+    in: path
+    required: true
+    description: The order to cancel
+    schema:
+      type: string
+    example: ord_7Kq2
+post:
+  tags: [orders]
+  summary: Cancel an order
+  description: Cancels an order that hasn't shipped yet. Any payment is refunded automatically.
+  operationId: cancelOrder
+  responses:
+    '200':
+      description: The order was cancelled
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/Order.yaml
+    '401':
+      $ref: ../../../shared/responses/Unauthorized.yaml
+    '404':
+      $ref: ../../../shared/responses/NotFound.yaml
+    '409':
+      description: The order has already shipped, so it can't be cancelled
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../../../shared/schemas/Problem.yaml
