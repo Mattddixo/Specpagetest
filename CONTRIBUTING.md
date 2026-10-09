@@ -14,5 +14,6 @@
 4. Open a pull request. CI runs the same lint, and the API's owners (see
    `.github/CODEOWNERS`) review it. Breaking changes need a migration note in
    the pull request description.
-5. After merging a release, tag it `<api>-v<version>`, for example
-   `orders-v1.1.0`, so it can be compared with later versions.
+5. When an API is released, keep a branch of that version named
+   `release-<api>-<major.minor>`, for example `release-orders-1.1`, so later
+   versions can be compared with it and fixes can go out for older clients.
