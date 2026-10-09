@@ -1,0 +1,12 @@
+type: object
+description: Where you are in a paged list. Pass nextCursor as the cursor parameter to get the next page.
+required: [hasMore]
+properties:
+  hasMore:
+    type: boolean
+    description: Whether there are more results after this page
+    example: true
+  nextCursor:
+    type: string
+    description: The cursor for the next page, when hasMore is true
+    example: eyJpZCI6ODQyfQ

@@ -1,0 +1,25 @@
+type: object
+description: An error response in the RFC 9457 "problem details" format, used by every Acme API.
+required: [type, title, status]
+properties:
+  type:
+    type: string
+    format: uri
+    description: A link to a page describing this kind of error
+    example: https://developer.acme-pets.example/errors/validation
+  title:
+    type: string
+    description: A short, human-readable summary of the problem
+    example: Some fields are invalid
+  status:
+    type: integer
+    description: The HTTP status code
+    example: 400
+  detail:
+    type: string
+    description: What went wrong with this particular request
+    example: quantity must be at least 1
+  traceId:
+    type: string
+    description: Quote this when contacting support
+    example: 4bf92f3577b34da6a3ce929d0e0e4736

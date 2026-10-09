@@ -1,0 +1,11 @@
+description: The request was invalid. The problem details say which fields to fix.
+content:
+  application/problem+json:
+    schema:
+      $ref: ../schemas/Problem.yaml
+    example:
+      type: https://developer.acme-pets.example/errors/validation
+      title: Some fields are invalid
+      status: 400
+      detail: quantity must be at least 1
+      traceId: 4bf92f3577b34da6a3ce929d0e0e4736

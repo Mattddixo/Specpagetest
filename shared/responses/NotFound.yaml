@@ -1,0 +1,10 @@
+description: Nothing exists with that ID
+content:
+  application/problem+json:
+    schema:
+      $ref: ../schemas/Problem.yaml
+    example:
+      type: https://developer.acme-pets.example/errors/not-found
+      title: Not found
+      status: 404
+      traceId: b7ad6b7169203331b7ad6b7169203331

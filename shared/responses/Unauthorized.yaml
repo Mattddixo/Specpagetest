@@ -1,0 +1,10 @@
+description: The access token is missing, expired or invalid
+content:
+  application/problem+json:
+    schema:
+      $ref: ../schemas/Problem.yaml
+    example:
+      type: https://developer.acme-pets.example/errors/unauthorized
+      title: Not signed in
+      status: 401
+      traceId: 0af7651916cd43dd8448eb211c80319c

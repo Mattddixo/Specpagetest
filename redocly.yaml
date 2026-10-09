@@ -1,0 +1,27 @@
+# API lint rules for every spec in this repo. CI runs `redocly lint` on each
+# pull request (see .github/workflows/lint.yml); run the same command locally
+# before pushing.
+extends:
+  - recommended
+
+rules:
+  # Internal APIs: no public licence to state.
+  info-license: off
+
+apis:
+  pets@v2:
+    root: openapi.yaml
+    rules:
+      # The demo pet store's server is a placeholder on purpose.
+      no-server-example.com: off
+  orders@v1:
+    root: apis/orders/openapi.yaml
+  payments@v2:
+    root: apis/payments/openapi.json
+  inventory@v0:
+    root: apis/inventory/swagger.yaml
+  order-events@v1:
+    root: events/notifications/asyncapi.yaml
+    rules:
+      # Kafka access is controlled by the cluster, not per operation.
+      security-defined: off

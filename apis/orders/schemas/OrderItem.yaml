@@ -1,0 +1,15 @@
+type: object
+description: One line on an order
+required: [sku, quantity, unitPrice]
+properties:
+  sku:
+    type: string
+    description: The product's stock-keeping unit
+    example: FOOD-DOG-2KG
+  quantity:
+    type: integer
+    minimum: 1
+    description: How many were ordered
+    example: 2
+  unitPrice:
+    $ref: ../../../shared/schemas/Money.yaml

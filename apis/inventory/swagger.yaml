@@ -1,0 +1,110 @@
+swagger: '2.0'
+info:
+  title: Inventory API (legacy)
+  version: 0.9.4
+  description: |
+    Stock levels for each warehouse.
+
+    This is an older Swagger 2.0 spec from before the move to OpenAPI 3. The
+    Warehouse team plans to migrate it; until then it is documented as is.
+  contact:
+    name: Warehouse team
+    email: warehouse@acme-pets.example
+host: inventory.acme-pets.example
+basePath: /api
+schemes: [https]
+securityDefinitions:
+  apiKey:
+    type: apiKey
+    in: header
+    name: X-Api-Key
+    description: Ask the Warehouse team for a key
+security:
+  - apiKey: []
+produces: [application/json]
+tags:
+  - name: stock
+    description: How many of each product are in stock
+paths:
+  /stock/{sku}:
+    get:
+      tags: [stock]
+      summary: Get stock for a product
+      description: Returns how many are available in each warehouse.
+      operationId: getStock
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          type: string
+          description: The product's stock-keeping unit
+      responses:
+        '200':
+          description: Stock per warehouse
+          schema:
+            $ref: '#/definitions/StockLevel'
+          examples:
+            application/json:
+              sku: FOOD-DOG-2KG
+              warehouses:
+                - id: wh-east
+                  available: 140
+                - id: wh-west
+                  available: 0
+        '404':
+          description: Unknown product
+  /stock/{sku}/reservations:
+    post:
+      tags: [stock]
+      summary: Reserve stock
+      description: Holds stock for an order for 15 minutes while payment goes through.
+      operationId: reserveStock
+      consumes: [application/json]
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          type: string
+          description: The product's stock-keeping unit
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Reservation'
+      responses:
+        '201':
+          description: Reserved
+        '409':
+          description: Not enough in stock
+definitions:
+  StockLevel:
+    type: object
+    description: Stock for one product
+    properties:
+      sku:
+        type: string
+        description: The product
+      warehouses:
+        type: array
+        description: Each warehouse holding it
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The warehouse
+            available:
+              type: integer
+              description: How many can be sold
+  Reservation:
+    type: object
+    description: What to hold
+    required: [orderId, quantity]
+    properties:
+      orderId:
+        type: string
+        description: The order the stock is for
+      quantity:
+        type: integer
+        minimum: 1
+        description: How many to hold

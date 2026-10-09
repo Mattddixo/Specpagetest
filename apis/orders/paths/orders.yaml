@@ -1,0 +1,66 @@
+get:
+  tags: [orders]
+  summary: List orders
+  description: Returns the signed-in customer's orders, newest first.
+  operationId: listOrders
+  parameters:
+    - $ref: ../../../shared/parameters/Cursor.yaml
+    - $ref: ../../../shared/parameters/Limit.yaml
+    - name: status
+      in: query
+      description: Only return orders with this status
+      schema:
+        $ref: ../schemas/OrderStatus.yaml
+  responses:
+    '200':
+      description: A page of orders
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data, pageInfo]
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../schemas/Order.yaml
+              pageInfo:
+                $ref: ../../../shared/schemas/PageInfo.yaml
+    '401':
+      $ref: ../../../shared/responses/Unauthorized.yaml
+post:
+  tags: [orders]
+  summary: Place an order
+  description: Creates an order from the items given. Payment is taken separately with the Payments API.
+  operationId: createOrder
+  parameters:
+    - name: Idempotency-Key
+      in: header
+      required: true
+      description: A unique value per order attempt, so retrying a request never places the order twice
+      schema:
+        type: string
+        format: uuid
+      example: 9b2d3c1e-5f4a-4c8b-9e7d-1a2b3c4d5e6f
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../schemas/NewOrder.yaml
+        example:
+          items:
+            - sku: FOOD-DOG-2KG
+              quantity: 2
+          shippingAddressId: addr_81f2
+  responses:
+    '201':
+      description: The order was placed
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/Order.yaml
+    '400':
+      $ref: ../../../shared/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../shared/responses/Unauthorized.yaml

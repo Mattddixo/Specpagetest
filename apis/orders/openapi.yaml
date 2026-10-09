@@ -1,0 +1,37 @@
+openapi: 3.1.0
+info:
+  title: Orders API
+  version: 1.0.0
+  description: |
+    Place and track orders in the Acme Pets store.
+
+    This spec is split across files: paths live in `paths/`, this API's
+    schemas in `schemas/`, and the error format, money and paging types are
+    shared with the other Acme APIs from `/shared`.
+
+    Owned by the Commerce team (#team-commerce).
+  contact:
+    name: Commerce team
+    email: commerce@acme-pets.example
+servers:
+  - url: https://api.acme-pets.example/orders/v1
+    description: Production
+  - url: https://sandbox.acme-pets.example/orders/v1
+    description: Sandbox (test data, reset nightly)
+security:
+  - bearerAuth: []
+tags:
+  - name: orders
+    description: Create orders and see where they are
+paths:
+  /orders:
+    $ref: paths/orders.yaml
+  /orders/{orderId}:
+    $ref: paths/order.yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: An access token from the Acme sign-in service

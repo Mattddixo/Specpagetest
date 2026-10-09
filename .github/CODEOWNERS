@@ -1,0 +1,9 @@
+# Who reviews changes to each API. In a real organization these would be
+# teams (for example @acme-pets/commerce); this demo has one person.
+*                     @Mattddixo
+/openapi.yaml         @Mattddixo
+/apis/orders/         @Mattddixo
+/apis/payments/       @Mattddixo
+/apis/inventory/      @Mattddixo
+/events/              @Mattddixo
+/shared/              @Mattddixo

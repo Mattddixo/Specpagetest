@@ -1,0 +1,84 @@
+asyncapi: 3.0.0
+info:
+  title: Order Events
+  version: 1.2.0
+  description: |
+    Events the Commerce platform publishes when orders change, so other
+    teams (email, warehouse, analytics) can react without polling.
+
+    Owned by the Commerce team (#team-commerce).
+  contact:
+    name: Commerce team
+    email: commerce@acme-pets.example
+defaultContentType: application/json
+servers:
+  production:
+    host: events.acme-pets.example:9092
+    protocol: kafka
+    description: Production Kafka cluster
+channels:
+  orderPlaced:
+    address: orders.placed.v1
+    description: One message per order placed
+    messages:
+      orderPlaced:
+        $ref: '#/components/messages/OrderPlaced'
+  orderShipped:
+    address: orders.shipped.v1
+    description: One message when an order leaves the warehouse
+    messages:
+      orderShipped:
+        $ref: '#/components/messages/OrderShipped'
+operations:
+  onOrderPlaced:
+    action: receive
+    channel:
+      $ref: '#/channels/orderPlaced'
+    summary: React to a new order
+  onOrderShipped:
+    action: receive
+    channel:
+      $ref: '#/channels/orderShipped'
+    summary: React to an order being shipped
+components:
+  messages:
+    OrderPlaced:
+      name: OrderPlaced
+      title: Order placed
+      summary: A customer placed an order
+      payload:
+        type: object
+        required: [orderId, customerId, placedAt]
+        properties:
+          orderId:
+            type: string
+            description: The order's ID
+            example: ord_7Kq2
+          customerId:
+            type: string
+            description: Who placed it
+            example: cus_51aa
+          placedAt:
+            type: string
+            format: date-time
+            description: When it was placed
+    OrderShipped:
+      name: OrderShipped
+      title: Order shipped
+      summary: An order left the warehouse
+      payload:
+        type: object
+        required: [orderId, carrier, trackingNumber]
+        properties:
+          orderId:
+            type: string
+            description: The order's ID
+            example: ord_7Kq2
+          carrier:
+            type: string
+            description: Who is delivering it
+            example: UPS
+          trackingNumber:
+            type: string
+            description: For the customer to track the parcel
+            example: 1Z999AA10123456784

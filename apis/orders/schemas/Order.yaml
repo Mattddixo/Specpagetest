@@ -1,0 +1,22 @@
+type: object
+description: An order placed by a customer
+required: [id, status, items, total, createdAt]
+properties:
+  id:
+    type: string
+    description: The order's ID
+    example: ord_7Kq2
+  status:
+    $ref: OrderStatus.yaml
+  items:
+    type: array
+    description: What was ordered
+    items:
+      $ref: OrderItem.yaml
+  total:
+    $ref: ../../../shared/schemas/Money.yaml
+  createdAt:
+    type: string
+    format: date-time
+    description: When the order was placed
+    example: '2026-10-01T14:03:00Z'

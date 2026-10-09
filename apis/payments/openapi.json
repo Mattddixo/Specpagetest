@@ -1,0 +1,385 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Payments API",
+    "version": "2.3.0",
+    "description": "Take payments for orders and issue refunds.\n\nOwned by the Payments team (#team-payments). Card details never pass through this API: the checkout page sends them straight to the payment provider and gives you a payment method token.",
+    "contact": {
+      "name": "Payments team",
+      "email": "payments@acme-pets.example"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.acme-pets.example/payments/v2",
+      "description": "Production"
+    },
+    {
+      "url": "https://sandbox.acme-pets.example/payments/v2",
+      "description": "Sandbox (no real money moves)"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "payments",
+      "description": "Charge a customer for an order"
+    },
+    {
+      "name": "refunds",
+      "description": "Give money back"
+    }
+  ],
+  "paths": {
+    "/payments": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Take a payment",
+        "operationId": "createPayment",
+        "description": "Charges the payment method for the order's total. Safe to retry with the same Idempotency-Key.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPayment"
+              },
+              "example": {
+                "orderId": "ord_7Kq2",
+                "paymentMethodToken": "pm_tok_4eC39HqLyjWDarjt"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The payment went through",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "The card was declined",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/payments/{paymentId}": {
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "Get a payment",
+        "operationId": "getPayment",
+        "description": "Returns one payment and whether any of it was refunded.",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "description": "The payment's ID",
+            "schema": {
+              "type": "string"
+            },
+            "example": "pay_3Mt9"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The payment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No payment with that ID",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{paymentId}/refunds": {
+      "post": {
+        "tags": [
+          "refunds"
+        ],
+        "summary": "Refund a payment",
+        "operationId": "createRefund",
+        "description": "Refunds all of a payment, or part of it when an amount is given.",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "description": "The payment to refund",
+            "schema": {
+              "type": "string"
+            },
+            "example": "pay_3Mt9"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "integer",
+                    "description": "How much to refund, in cents. Leave out to refund everything left.",
+                    "example": 500
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Why, shown to the customer",
+                    "example": "Damaged in delivery"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The refund was started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Refund"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "Nothing left to refund",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "An access token from the Acme sign-in service"
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "A unique value per attempt, so a retried request never charges twice",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "3f6c1a2b-7d8e-4f90-a1b2-c3d4e5f60718"
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "The access token is missing or invalid",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "NewPayment": {
+        "type": "object",
+        "description": "What to charge",
+        "required": [
+          "orderId",
+          "paymentMethodToken"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "The order to pay for",
+            "example": "ord_7Kq2"
+          },
+          "paymentMethodToken": {
+            "type": "string",
+            "description": "From the checkout page",
+            "example": "pm_tok_4eC39HqLyjWDarjt"
+          }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "description": "A charge for an order",
+        "required": [
+          "id",
+          "orderId",
+          "status",
+          "amount",
+          "currency"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The payment's ID",
+            "example": "pay_3Mt9"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "The order it paid for",
+            "example": "ord_7Kq2"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "pending",
+              "failed"
+            ],
+            "description": "Whether the money was taken",
+            "example": "succeeded"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "In cents",
+            "example": 3998
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 code",
+            "example": "USD"
+          },
+          "refundedAmount": {
+            "type": "integer",
+            "description": "How much has been refunded, in cents",
+            "example": 0
+          }
+        }
+      },
+      "Refund": {
+        "type": "object",
+        "description": "Money given back",
+        "required": [
+          "id",
+          "paymentId",
+          "amount",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The refund's ID",
+            "example": "ref_9Lp1"
+          },
+          "paymentId": {
+            "type": "string",
+            "description": "The payment refunded",
+            "example": "pay_3Mt9"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "In cents",
+            "example": 500
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "succeeded",
+              "failed"
+            ],
+            "description": "Refunds take a few days to reach the customer",
+            "example": "pending"
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "description": "An error in the RFC 9457 problem details format",
+        "required": [
+          "type",
+          "title",
+          "status"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri",
+            "description": "A link describing this kind of error",
+            "example": "https://developer.acme-pets.example/errors/card-declined"
+          },
+          "title": {
+            "type": "string",
+            "description": "A short summary",
+            "example": "Card declined"
+          },
+          "status": {
+            "type": "integer",
+            "description": "The HTTP status code",
+            "example": 402
+          },
+          "detail": {
+            "type": "string",
+            "description": "What went wrong this time",
+            "example": "The bank declined the charge."
+          }
+        }
+      }
+    }
+  }
+}

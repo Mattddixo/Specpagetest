@@ -1,0 +1,13 @@
+type: object
+description: An amount of money. Amounts are in minor units (cents) to avoid rounding errors.
+required: [amount, currency]
+properties:
+  amount:
+    type: integer
+    description: The amount in minor units, for example 1999 for $19.99
+    example: 1999
+  currency:
+    type: string
+    description: ISO 4217 currency code
+    pattern: '^[A-Z]{3}$'
+    example: USD

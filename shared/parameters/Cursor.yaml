@@ -1,0 +1,6 @@
+name: cursor
+in: query
+description: Where to continue from, taken from pageInfo.nextCursor of the previous page
+schema:
+  type: string
+example: eyJpZCI6ODQyfQ

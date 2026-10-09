@@ -1,0 +1,25 @@
+type: object
+description: What to order and where to send it
+required: [items, shippingAddressId]
+properties:
+  items:
+    type: array
+    minItems: 1
+    description: The products and quantities
+    items:
+      type: object
+      required: [sku, quantity]
+      properties:
+        sku:
+          type: string
+          description: The product's stock-keeping unit
+          example: FOOD-DOG-2KG
+        quantity:
+          type: integer
+          minimum: 1
+          description: How many to order
+          example: 2
+  shippingAddressId:
+    type: string
+    description: One of the customer's saved addresses
+    example: addr_81f2
